@@ -69,7 +69,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     // used for webGL
     this._glTextures = [];
-    
+
     if(!source)return;
 
     if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
@@ -99,7 +99,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.imageUrl = null;
     this._powerOf2 = false;
 
-    
+
 
 };
 
@@ -117,6 +117,10 @@ PIXI.BaseTexture.prototype.destroy = function()
         delete PIXI.BaseTextureCache[this.imageUrl];
         this.imageUrl = null;
         this.source.src = null;
+    }
+    if(this.canvasId)
+    {
+        delete PIXI.BaseTextureCache[this.canvasId];
     }
     this.source = null;
     PIXI.texturesToDestroy.push(this);
@@ -142,14 +146,14 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
  * @static
  * @method fromImage
  * @param imageUrl {String} The image url of the texture
- * @param crossorigin {Boolean} 
+ * @param crossorigin {Boolean}
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return BaseTexture
  */
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
-    
+
     if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
 
     if(!baseTexture)
@@ -192,6 +196,7 @@ PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
     if(!baseTexture)
     {
         baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
+        baseTexture.canvasId = canvas._pixiId;
         PIXI.BaseTextureCache[canvas._pixiId] = baseTexture;
     }
 
